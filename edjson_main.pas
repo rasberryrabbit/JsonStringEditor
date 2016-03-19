@@ -104,6 +104,7 @@ procedure TForm1.ActionNextExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
 begin
+  MemoDoChanges;
   n := TreeView1.Selected;
   if n=nil then
     n:=TreeView1.Items.GetFirstNode;
@@ -135,6 +136,7 @@ procedure TForm1.ActionPrevExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
 begin
+  MemoDoChanges;
   n := TreeView1.Selected;
   if n=nil then
     n:=TreeView1.Items.GetLastNode;
