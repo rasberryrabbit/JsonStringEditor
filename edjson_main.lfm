@@ -40,6 +40,7 @@ object Form1: TForm1
       Height = 90
       Top = 56
       Width = 576
+      Anchors = [akTop, akLeft, akRight]
       OnExit = Memo1Exit
       ScrollBars = ssAutoBoth
       TabOrder = 0
@@ -125,6 +126,7 @@ object Form1: TForm1
       Dialog.Filter = 'json file|*.json|all files|*.*'
       Dialog.FilterIndex = 0
       Hint = 'Save As'
+      ShortCut = 16467
       OnAccept = FileSaveAs1Accept
     end
     object FileExit1: TFileExit
