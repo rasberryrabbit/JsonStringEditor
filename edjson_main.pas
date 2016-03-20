@@ -25,7 +25,6 @@ type
     Label1: TLabel;
     MainMenu1: TMainMenu;
     Memo1: TMemo;
-    Memo2: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;

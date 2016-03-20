@@ -77,16 +77,6 @@ object Form1: TForm1
       Anchors = [akTop, akRight]
       TabOrder = 2
     end
-    object Memo2: TMemo
-      Left = 8
-      Height = 34
-      Top = 152
-      Width = 376
-      Lines.Strings = (
-        'Memo2'
-      )
-      TabOrder = 3
-    end
   end
   object StatusBar1: TStatusBar
     Left = 0
