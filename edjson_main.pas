@@ -13,6 +13,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    ActionImport: TAction;
     ActionPrev: TAction;
     ActionNext: TAction;
     ActionList1: TActionList;
@@ -24,13 +25,20 @@ type
     Label1: TLabel;
     MainMenu1: TMainMenu;
     Memo1: TMemo;
+    Memo2: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    OpenDialogImport: TOpenDialog;
     Panel1: TPanel;
     StatusBar1: TStatusBar;
     TreeView1: TTreeView;
+    procedure ActionImportExecute(Sender: TObject);
     procedure ActionNextExecute(Sender: TObject);
     procedure ActionPrevExecute(Sender: TObject);
     procedure FileOpen1Accept(Sender: TObject);
@@ -52,6 +60,8 @@ type
     procedure MemoDoChanges;
     procedure MemoDoEditFocus;
     procedure SaveJson(FileName:string; Data:TJSONData);
+    procedure ImportJsonData(const Path:string; Data: TJSONData);
+    procedure ImportJson(FileName:string);
   end;
 
 var
@@ -68,6 +78,8 @@ var
   koData : TJSONData = nil;
   pnode : TTreeNode = nil;
   JsonModified : Boolean = False;
+  koImport : TJSONData = nil;
+  patchCount:Integer = 0;
 
 { TForm1 }
 
@@ -132,6 +144,12 @@ begin
   end;
 end;
 
+procedure TForm1.ActionImportExecute(Sender: TObject);
+begin
+  if OpenDialogImport.Execute then
+    ImportJson(pchar(OpenDialogImport.FileName));
+end;
+
 procedure TForm1.ActionPrevExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
@@ -173,7 +191,7 @@ procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   CanClose:=False;
   if JsonModified then begin
-    if mrYes=QuestionDlg('Modified','Lost changes. Are you sure?',mtConfirmation,[mrYes,mrNo],'') then
+    if mrYes=QuestionDlg('Modified','Lost changes. Are you sure?',mtConfirmation,[mrYes,'&Yes',mrNo,'&No','IsDefault'],'') then
       CanClose:=True;
   end else
     CanClose:=True;
@@ -309,6 +327,61 @@ begin
   except
     on e: exception do ShowMessage(e.Message);
   end;
+end;
+
+procedure TForm1.ImportJsonData(const Path: string; Data: TJSONData);
+var
+  i : integer;
+  s : string;
+  js : TJSONData;
+begin
+  if assigned(Data) then begin
+    case Data.JSONType of
+    jtObject: begin
+               for i:=0 to Data.Count-1 do begin
+                 s:=Path+'.'+TJSONObject(Data).Names[i];
+                 ImportJsonData(s,TJSONObject(Data).Items[i]);
+               end;
+              end;
+    jtString: if koData<>nil then begin
+               js:=TJSONObject(koData).FindPath(Path);
+               if js<>nil then begin
+                 TJSONString(js).AsUnicodeString:=TJSONString(Data).AsUnicodeString;
+                 JsonModified:=True;
+                 Inc(patchCount);
+               end;
+              end;
+    else
+      ;
+    end;
+  end;
+end;
+
+procedure TForm1.ImportJson(FileName: string);
+var
+  fj : TFileStream;
+  ps : TJSONParser;
+begin
+  FreeAndNil(koImport);
+  patchCount:=0;
+  try
+    fj := TFileStream.Create(pchar(FileName),fmOpenRead);
+    try
+      ps := TJSONParser.Create(fj);
+      try
+        koImport:=ps.Parse;
+      finally
+        ps.Free;
+      end;
+    finally
+      fj.Free;
+    end;
+    ImportJsonData('',koImport);
+    MessageDlg('Import Done',Format(' %d string value(s) imported ',[patchCount]),mtInformation,[mbOK],'');
+  except
+    on e:exception do ShowMessage(e.Message);
+  end;
+  FreeAndNil(koImport);
 end;
 
 end.

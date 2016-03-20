@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 258
-  Height = 413
+  Height = 453
   Top = 171
   Width = 611
-  Caption = 'JSON String Editor 0.1'
-  ClientHeight = 393
+  Caption = 'JSON String Editor 0.2'
+  ClientHeight = 433
   ClientWidth = 611
   Menu = MainMenu1
   OnCloseQuery = FormCloseQuery
@@ -12,7 +12,7 @@ object Form1: TForm1
   LCLVersion = '1.7'
   object TreeView1: TTreeView
     Left = 9
-    Height = 167
+    Height = 207
     Top = 0
     Width = 594
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -29,7 +29,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 9
     Height = 192
-    Top = 175
+    Top = 215
     Width = 595
     Anchors = [akLeft, akRight, akBottom]
     ClientHeight = 192
@@ -77,11 +77,21 @@ object Form1: TForm1
       Anchors = [akTop, akRight]
       TabOrder = 2
     end
+    object Memo2: TMemo
+      Left = 8
+      Height = 34
+      Top = 152
+      Width = 376
+      Lines.Strings = (
+        'Memo2'
+      )
+      TabOrder = 3
+    end
   end
   object StatusBar1: TStatusBar
     Left = 0
     Height = 22
-    Top = 371
+    Top = 411
     Width = 611
     Panels = <    
       item
@@ -98,8 +108,20 @@ object Form1: TForm1
       object MenuItem3: TMenuItem
         Action = FileOpen1
       end
+      object MenuItem2: TMenuItem
+        Caption = '-'
+      end
       object MenuItem4: TMenuItem
         Action = FileSaveAs1
+      end
+      object MenuItem6: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem7: TMenuItem
+        Action = ActionImport
+      end
+      object MenuItem8: TMenuItem
+        Caption = '-'
       end
       object MenuItem5: TMenuItem
         Action = FileExit1
@@ -142,5 +164,16 @@ object Form1: TForm1
       Caption = '&Next'
       OnExecute = ActionNextExecute
     end
+    object ActionImport: TAction
+      Caption = '&Import JSON'
+      OnExecute = ActionImportExecute
+    end
+  end
+  object OpenDialogImport: TOpenDialog
+    DefaultExt = '.json'
+    Filter = 'json file|*.json|all files|*.*'
+    FilterIndex = 0
+    left = 272
+    top = 152
   end
 end
