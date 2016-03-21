@@ -376,6 +376,8 @@ begin
       fj.Free;
     end;
     ImportJsonData('',koImport);
+    if TreeView1.Selected<>nil then
+      TreeView1SelectionChanged(nil);
     MessageDlg('Import Done',Format(' %d string value(s) imported ',[patchCount]),mtInformation,[mbOK],'');
   except
     on e:exception do ShowMessage(e.Message);
