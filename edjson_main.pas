@@ -13,6 +13,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    ActionImportNode: TAction;
     ActionImport: TAction;
     ActionPrev: TAction;
     ActionNext: TAction;
@@ -26,6 +27,8 @@ type
     MainMenu1: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -33,11 +36,14 @@ type
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     OpenDialogImport: TOpenDialog;
     Panel1: TPanel;
+    PopupMenu1: TPopupMenu;
     StatusBar1: TStatusBar;
     TreeView1: TTreeView;
     procedure ActionImportExecute(Sender: TObject);
+    procedure ActionImportNodeExecute(Sender: TObject);
     procedure ActionNextExecute(Sender: TObject);
     procedure ActionPrevExecute(Sender: TObject);
     procedure FileOpen1Accept(Sender: TObject);
@@ -60,7 +66,7 @@ type
     procedure MemoDoEditFocus;
     procedure SaveJson(FileName:string; Data:TJSONData);
     procedure ImportJsonData(const Path:string; Data: TJSONData);
-    procedure ImportJson(FileName:string);
+    procedure ImportJson(const FileName: string; root_path: string);
   end;
 
 var
@@ -146,7 +152,29 @@ end;
 procedure TForm1.ActionImportExecute(Sender: TObject);
 begin
   if OpenDialogImport.Execute then
-    ImportJson(pchar(OpenDialogImport.FileName));
+    ImportJson(pchar(OpenDialogImport.FileName),'');
+end;
+
+procedure TForm1.ActionImportNodeExecute(Sender: TObject);
+var
+  n : TTreeNode;
+  nodename : string;
+begin
+  n:=TreeView1.Selected;
+  if n<>nil then begin
+    if OpenDialogImport.Execute then begin
+      nodename := '';
+      // make nodename
+      while n<>nil do begin
+        if nodename<>'' then
+          nodename := pchar(n.Text)+ '.' + nodename
+          else
+            nodename := pchar(n.Text);
+        n:=n.Parent;
+      end;
+      ImportJson(pchar(OpenDialogImport.FileName),nodename);
+    end;
+  end;
 end;
 
 procedure TForm1.ActionPrevExecute(Sender: TObject);
@@ -356,10 +384,11 @@ begin
   end;
 end;
 
-procedure TForm1.ImportJson(FileName: string);
+procedure TForm1.ImportJson(const FileName: string; root_path:string);
 var
   fj : TFileStream;
   ps : TJSONParser;
+  start_data:TJSONData;
 begin
   FreeAndNil(koImport);
   patchCount:=0;
@@ -375,7 +404,12 @@ begin
     finally
       fj.Free;
     end;
-    ImportJsonData('',koImport);
+    if root_path<>'' then
+      start_data:=koImport.FindPath(root_path)
+      else
+        start_data:=koImport;
+    if start_data<>nil then
+      ImportJsonData(root_path,start_data);
     if TreeView1.Selected<>nil then
       TreeView1SelectionChanged(nil);
     MessageDlg('Import Done',Format(' %d string value(s) imported ',[patchCount]),mtInformation,[mbOK],'');

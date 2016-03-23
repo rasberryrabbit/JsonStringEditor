@@ -3,7 +3,7 @@ object Form1: TForm1
   Height = 453
   Top = 171
   Width = 611
-  Caption = 'JSON String Editor 0.2'
+  Caption = 'JSON String Editor 0.3'
   ClientHeight = 433
   ClientWidth = 611
   Menu = MainMenu1
@@ -17,6 +17,7 @@ object Form1: TForm1
     Width = 594
     Anchors = [akTop, akLeft, akRight, akBottom]
     DefaultItemHeight = 14
+    PopupMenu = PopupMenu1
     ReadOnly = True
     TabOrder = 0
     OnDblClick = TreeView1DblClick
@@ -117,6 +118,12 @@ object Form1: TForm1
         Action = FileExit1
       end
     end
+    object MenuItem9: TMenuItem
+      Caption = '&Edit'
+      object MenuItem10: TMenuItem
+        Action = ActionImportNode
+      end
+    end
   end
   object ActionList1: TActionList
     left = 200
@@ -158,6 +165,10 @@ object Form1: TForm1
       Caption = '&Import JSON'
       OnExecute = ActionImportExecute
     end
+    object ActionImportNode: TAction
+      Caption = 'Import Node'
+      OnExecute = ActionImportNodeExecute
+    end
   end
   object OpenDialogImport: TOpenDialog
     DefaultExt = '.json'
@@ -165,5 +176,12 @@ object Form1: TForm1
     FilterIndex = 0
     left = 272
     top = 152
+  end
+  object PopupMenu1: TPopupMenu
+    left = 365
+    top = 152
+    object MenuItem11: TMenuItem
+      Action = ActionImportNode
+    end
   end
 end
