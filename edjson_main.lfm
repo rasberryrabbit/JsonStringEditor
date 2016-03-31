@@ -8,14 +8,15 @@ object Form1: TForm1
   ClientWidth = 611
   Menu = MainMenu1
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.7'
   object TreeView1: TTreeView
-    Left = 9
-    Height = 207
+    Left = 0
+    Height = 232
     Top = 0
-    Width = 594
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Width = 611
+    Align = alClient
     DefaultItemHeight = 14
     PopupMenu = PopupMenu1
     ReadOnly = True
@@ -26,58 +27,6 @@ object Form1: TForm1
     OnMouseDown = TreeView1MouseDown
     OnSelectionChanged = TreeView1SelectionChanged
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips]
-  end
-  object Panel1: TPanel
-    Left = 9
-    Height = 192
-    Top = 215
-    Width = 595
-    Anchors = [akLeft, akRight, akBottom]
-    ClientHeight = 192
-    ClientWidth = 595
-    TabOrder = 1
-    object Memo1: TMemo
-      Left = 8
-      Height = 90
-      Top = 56
-      Width = 576
-      Anchors = [akTop, akLeft, akRight]
-      OnExit = Memo1Exit
-      ScrollBars = ssAutoBoth
-      TabOrder = 0
-    end
-    object Label1: TLabel
-      Left = 11
-      Height = 30
-      Top = 18
-      Width = 573
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      Caption = '..'
-      Font.Height = 14
-      ParentColor = False
-      ParentFont = False
-      ShowAccelChar = False
-      WordWrap = True
-    end
-    object Button2: TButton
-      Left = 408
-      Height = 25
-      Top = 152
-      Width = 75
-      Action = ActionPrev
-      Anchors = [akTop, akRight]
-      TabOrder = 1
-    end
-    object Button3: TButton
-      Left = 509
-      Height = 25
-      Top = 152
-      Width = 75
-      Action = ActionNext
-      Anchors = [akTop, akRight]
-      TabOrder = 2
-    end
   end
   object StatusBar1: TStatusBar
     Left = 0
@@ -90,6 +39,68 @@ object Form1: TForm1
         Width = 50
       end>
     SimplePanel = False
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 42
+    Top = 369
+    Width = 611
+    Align = alBottom
+    ClientHeight = 42
+    ClientWidth = 611
+    TabOrder = 2
+    object Button3: TButton
+      Left = 509
+      Height = 25
+      Top = 8
+      Width = 75
+      Action = ActionNext
+      Anchors = [akTop, akRight]
+      TabOrder = 1
+    end
+    object Button2: TButton
+      Left = 408
+      Height = 25
+      Top = 8
+      Width = 75
+      Action = ActionPrev
+      Anchors = [akTop, akRight]
+      TabOrder = 0
+    end
+  end
+  object Memo1: TMemo
+    Left = 0
+    Height = 89
+    Top = 280
+    Width = 611
+    Align = alBottom
+    OnExit = Memo1Exit
+    ScrollBars = ssAutoBoth
+    TabOrder = 3
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 48
+    Top = 232
+    Width = 611
+    Align = alBottom
+    ClientHeight = 48
+    ClientWidth = 611
+    TabOrder = 4
+    object Label1: TLabel
+      Left = 0
+      Height = 40
+      Top = 8
+      Width = 611
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      Caption = '..'
+      Font.Height = 14
+      ParentColor = False
+      ParentFont = False
+      ShowAccelChar = False
+      WordWrap = True
+    end
   end
   object MainMenu1: TMainMenu
     left = 120

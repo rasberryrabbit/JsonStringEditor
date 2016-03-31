@@ -39,6 +39,7 @@ type
     MenuItem9: TMenuItem;
     OpenDialogImport: TOpenDialog;
     Panel1: TPanel;
+    Panel2: TPanel;
     PopupMenu1: TPopupMenu;
     StatusBar1: TStatusBar;
     TreeView1: TTreeView;
@@ -49,6 +50,7 @@ type
     procedure FileOpen1Accept(Sender: TObject);
     procedure FileSaveAs1Accept(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Memo1Exit(Sender: TObject);
     procedure TreeView1DblClick(Sender: TObject);
@@ -77,7 +79,7 @@ implementation
 {$R *.lfm}
 
 uses
-  jsonparser;
+  jsonparser, windows;
 
 var
   koData : TJSONData = nil;
@@ -222,6 +224,11 @@ begin
       CanClose:=True;
   end else
     CanClose:=True;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
