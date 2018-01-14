@@ -146,6 +146,13 @@ object Form1: TForm1
       object MenuItem13: TMenuItem
         Action = ActionTranslate
       end
+      object MenuItem15: TMenuItem
+        Action = ActionFindStringFirst
+      end
+      object MenuItem14: TMenuItem
+        Action = ActionFindString
+        ShortCut = 114
+      end
     end
   end
   object ActionList1: TActionList
@@ -197,6 +204,15 @@ object Form1: TForm1
       OnExecute = ActionTranslateExecute
       ShortCut = 116
     end
+    object ActionFindString: TAction
+      Caption = 'Find Next'
+      OnExecute = ActionFindStringExecute
+    end
+    object ActionFindStringFirst: TAction
+      Caption = 'Find'
+      OnExecute = ActionFindStringFirstExecute
+      ShortCut = 16454
+    end
   end
   object OpenDialogImport: TOpenDialog
     DefaultExt = '.json'
@@ -214,5 +230,13 @@ object Form1: TForm1
     object MenuItem12: TMenuItem
       Action = ActionTranslate
     end
+  end
+  object FindDialog1: TFindDialog
+    Width = 480
+    Height = 136
+    Options = [frDown, frDisableUpDown, frDisableWholeWord]
+    OnFind = FindDialog1Find
+    Left = 440
+    Top = 152
   end
 end

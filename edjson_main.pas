@@ -13,6 +13,8 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    ActionFindStringFirst: TAction;
+    ActionFindString: TAction;
     ActionTranslate: TAction;
     ActionImportNode: TAction;
     ActionImport: TAction;
@@ -25,6 +27,7 @@ type
     FileExit1: TFileExit;
     FileOpen1: TFileOpen;
     FileSaveAs1: TFileSaveAs;
+    FindDialog1: TFindDialog;
     Label1: TLabel;
     MainMenu1: TMainMenu;
     Memo1: TMemo;
@@ -33,6 +36,8 @@ type
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -47,6 +52,8 @@ type
     PopupMenu1: TPopupMenu;
     StatusBar1: TStatusBar;
     TreeView1: TTreeView;
+    procedure ActionFindStringExecute(Sender: TObject);
+    procedure ActionFindStringFirstExecute(Sender: TObject);
     procedure ActionImportExecute(Sender: TObject);
     procedure ActionImportNodeExecute(Sender: TObject);
     procedure ActionNextExecute(Sender: TObject);
@@ -54,6 +61,7 @@ type
     procedure ActionTranslateExecute(Sender: TObject);
     procedure FileOpen1Accept(Sender: TObject);
     procedure FileSaveAs1Accept(Sender: TObject);
+    procedure FindDialog1Find(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -69,6 +77,9 @@ type
     { private declarations }
   public
     { public declarations }
+
+    mFindStr : string;
+
     procedure AddJsonData(pa:TTreeNode; Data: TJSONData);
     procedure MemoDoChanges;
     procedure MemoDoEditFocus;
@@ -85,7 +96,7 @@ implementation
 {$R *.lfm}
 
 uses
-  jsonparser, windows, uGoogleTranApi, LazUTF8;
+  jsonparser, windows, uGoogleTranApi, LazUTF8, RegExpr;
 
 var
   koData : TJSONData = nil;
@@ -152,8 +163,10 @@ begin
       if (n<>nil) and (TJSONData(n.Data).JSONType=jtString) then
         break;
     end;
-    if n<>nil then
-      n.Selected:=True;
+    if n<>nil then begin
+      TreeView1.Selected:=n;
+      TreeView1.TopItem:=n;
+    end;
   end;
 end;
 
@@ -161,6 +174,62 @@ procedure TForm1.ActionImportExecute(Sender: TObject);
 begin
   if OpenDialogImport.Execute then
     ImportJson(pchar(OpenDialogImport.FileName),'');
+end;
+
+procedure TForm1.ActionFindStringExecute(Sender: TObject);
+var
+  n, p, q : TTreeNode;
+  istr : string;
+  rfind : TRegExpr;
+begin
+  n := TreeView1.Selected;
+  if n=nil then
+    n:=TreeView1.Items.GetFirstNode;
+  mFindStr:=pchar(FindDialog1.FindText);
+  if (n<>nil) and (mFindStr<>'') then begin
+    q := n;
+    rfind := TRegExpr.Create(pchar(mFindStr));
+    try
+      if not (frMatchCase in FindDialog1.Options) then
+        rfind.ModifierI:=True;
+      while n<>nil do begin
+        p:=nil;
+        if n.HasChildren then
+          p:=n.GetFirstChild
+          else begin
+            while n<>nil do begin
+              p:=n.GetNextSibling;
+              if p=nil then
+                p:=n.Parent
+                else
+                  break;
+              n:=p;
+            end;
+          end;
+        n:=p;
+        if n=nil then
+          n:=TreeView1.Items.GetFirstNode;
+        if q = n then
+          break;
+        if (n<>nil) and (TJSONData(n.Data).JSONType=jtString) then begin
+          istr:=UTF8Encode(TJSONData(n.Data).AsUnicodeString);
+          if rfind.Exec(pchar(istr)) then
+            break;
+        end;
+      end;
+    finally
+      rfind.Free;
+    end;
+    if n<>nil then begin
+      TreeView1.Selected:=n;
+      TreeView1.TopItem:=n;
+    end;
+  end;
+end;
+
+procedure TForm1.ActionFindStringFirstExecute(Sender: TObject);
+begin
+  FindDialog1.Execute;
 end;
 
 procedure TForm1.ActionImportNodeExecute(Sender: TObject);
@@ -212,8 +281,10 @@ begin
       if (n<>nil) and (TJSONData(n.Data).JSONType=jtString) then
         break;
     end;
-    if n<>nil then
-      n.Selected:=True;
+    if n<>nil then begin
+      TreeView1.Selected:=n;
+      TreeView1.TopItem:=n;
+    end;
   end;
 end;
 
@@ -235,6 +306,12 @@ end;
 procedure TForm1.FileSaveAs1Accept(Sender: TObject);
 begin
   SaveJson(pchar(FileSaveAs1.Dialog.FileName),koData);
+end;
+
+procedure TForm1.FindDialog1Find(Sender: TObject);
+begin
+  ActionFindStringExecute(nil);
+  FindDialog1.CloseDialog;
 end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
