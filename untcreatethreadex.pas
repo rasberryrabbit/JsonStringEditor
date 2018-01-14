@@ -58,11 +58,12 @@ var
   modNtDll:HMODULE;
   funNtCreateThreadEx:TLPFUN_NtCreateThreadEx;
   ntbuffer:NtCreateThreadExBuffer;
-  temp1,temp2:DWORD;
   hThread:HANDLE;
   status:DWORD;
   {$ifndef CPU32}
   buf641, buf642 : array[0..63] of byte;
+  {$else}
+  temp1,temp2,temp3:DWORD;
   {$endif}
 begin
   modNtDll:=LoadLibrary('ntdll.dll');
@@ -78,11 +79,12 @@ begin
     exit;
   end;
   fillchar(ntbuffer,sizeof(NtCreateThreadExBuffer),0);
-  temp1:=0;
-  temp2:=0;
   ntbuffer.Size := sizeof(NtCreateThreadExBuffer);
   {$ifdef CPU32}
   // 32bit
+  temp1:=0;
+  temp2:=0;
+  temp3:=0;
   ntbuffer.Unknown1 := $10003;
   ntbuffer.Unknown2 := $8;
   ntbuffer.pThreadexId := @temp2;
@@ -106,7 +108,7 @@ begin
                       False, 0, 0, 0, @ntbuffer);
   Result:=hThread;
   if pThreadid<>nil then
-    pThreadid:=ntbuffer.pThreadexId;
+    pThreadid^:=LPDWORD(ntbuffer.pThreadexId)^;
 end;
 
 end.
