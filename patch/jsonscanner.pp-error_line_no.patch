@@ -1,0 +1,36 @@
+Index: packages/fcl-json/src/jsonscanner.pp
+===================================================================
+--- packages/fcl-json/src/jsonscanner.pp	(revision 37973)
++++ packages/fcl-json/src/jsonscanner.pp	(working copy)
+@@ -24,7 +24,7 @@
+ resourcestring
+   SErrInvalidCharacter = 'Invalid character at line %d, pos %d: ''%s''';
+   SUnterminatedComment = 'Unterminated comment at line %d, pos %d: ''%s''';
+-  SErrOpenString = 'string exceeds end of line';
++  SErrOpenString = 'string exceeds end of line %d';
+ 
+ type
+ 
+@@ -288,7 +288,7 @@
+                     else
+                       S:=WideChar(StrToInt('$'+S));  
+                     end;
+-              #0  : Error(SErrOpenString);
++              #0  : Error(SErrOpenString,[FCurRow]);
+             else
+               Error(SErrInvalidCharacter, [CurRow,CurColumn,TokenStr[0]]);
+             end;
+@@ -302,11 +302,11 @@
+             TokenStart := TokenStr+1;
+             end;
+           if TokenStr[0] = #0 then
+-            Error(SErrOpenString);
++            Error(SErrOpenString,[FCurRow]);
+           Inc(TokenStr);
+           end;
+         if TokenStr[0] = #0 then
+-          Error(SErrOpenString);
++          Error(SErrOpenString,[FCurRow]);
+         SectionLength := TokenStr - TokenStart;
+         SetLength(FCurTokenString, OldLength + SectionLength);
+         if SectionLength > 0 then

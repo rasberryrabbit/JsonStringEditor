@@ -1,0 +1,20 @@
+Index: lcl/include/treeview.inc
+===================================================================
+--- lcl/include/treeview.inc	(revision 57095)
++++ lcl/include/treeview.inc	(working copy)
+@@ -5344,7 +5344,14 @@
+     begin
+       CurTextRect := NodeRect;
+       CurTextRect.Left := x;
+-      CurTextRect.Right := x + TextWidth(Node.Text) + RealIndent div 2;
++      // fix for non-themed text
++      if not (tvoThemedDraw in Options) then
++      begin
++        DrawText(Canvas.Handle, PChar(Node.Text), -1, CurTextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_NOPREFIX or DT_CALCRECT);
++        CurTextRect.Top:=CurTextRect.Top+(NodeRect.Bottom-CurTextRect.Bottom);
++        CurTextRect.Bottom:=CurTextRect.Bottom+(NodeRect.Bottom-CurTextRect.Bottom);
++      end else
++        CurTextRect.Right := x + TextWidth(Node.Text) + RealIndent div 2;
+       DrawNodeText(NodeSelected, CurTextRect, Node.Text);
+     end;
+ 
