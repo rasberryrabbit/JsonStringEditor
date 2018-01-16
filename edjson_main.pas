@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TFormMain }
 
-  TForm1 = class(TForm)
+  TFormMain = class(TForm)
     ActionFindStringFirst: TAction;
     ActionFindString: TAction;
     ActionTranslate: TAction;
@@ -78,8 +78,6 @@ type
   public
     { public declarations }
 
-    mFindStr : string;
-
     procedure AddJsonData(pa:TTreeNode; Data: TJSONData);
     procedure MemoDoChanges;
     procedure MemoDoEditFocus;
@@ -89,7 +87,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormMain: TFormMain;
 
 implementation
 
@@ -105,13 +103,20 @@ var
   koImport : TJSONData = nil;
   patchCount:Integer = 0;
 
-{ TForm1 }
+const
+  utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
 
 
-procedure TForm1.FileOpen1Accept(Sender: TObject);
+{ TFormMain }
+
+
+procedure TFormMain.FileOpen1Accept(Sender: TObject);
+const
+  utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
 var
   fj : TFileStream;
   ps : TJSONParser;
+  dummy : array[0..3] of byte;
 begin
   FreeAndNil(koData);
   pnode:=nil;
@@ -119,6 +124,11 @@ begin
   try
     fj := TFileStream.Create(pchar(FileOpen1.Dialog.FileName),fmOpenRead);
     try
+      if fj.Read(dummy[0],3)=3 then begin
+        if not CompareMem(@utf8_bom[0],@dummy[0],3) then
+          fj.Position:=0;
+      end else
+        fj.Position:=0;
       ps := TJSONParser.Create(fj);
       try
         koData:=ps.Parse;
@@ -136,7 +146,7 @@ begin
   JsonModified:=False;
 end;
 
-procedure TForm1.ActionNextExecute(Sender: TObject);
+procedure TFormMain.ActionNextExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
 begin
@@ -165,21 +175,22 @@ begin
     end;
     if n<>nil then begin
       TreeView1.Selected:=n;
-      TreeView1.TopItem:=n;
+      //TreeView1.TopItem:=n;
+      TreeView1.Invalidate;
     end;
   end;
 end;
 
-procedure TForm1.ActionImportExecute(Sender: TObject);
+procedure TFormMain.ActionImportExecute(Sender: TObject);
 begin
   if OpenDialogImport.Execute then
     ImportJson(pchar(OpenDialogImport.FileName),'');
 end;
 
-procedure TForm1.ActionFindStringExecute(Sender: TObject);
+procedure TFormMain.ActionFindStringExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
-  istr : string;
+  istr, mFindStr : string;
   rfind : TRegExpr;
 begin
   n := TreeView1.Selected;
@@ -222,17 +233,18 @@ begin
     end;
     if n<>nil then begin
       TreeView1.Selected:=n;
-      TreeView1.TopItem:=n;
+      //TreeView1.TopItem:=n;
+      TreeView1.Invalidate;
     end;
   end;
 end;
 
-procedure TForm1.ActionFindStringFirstExecute(Sender: TObject);
+procedure TFormMain.ActionFindStringFirstExecute(Sender: TObject);
 begin
   FindDialog1.Execute;
 end;
 
-procedure TForm1.ActionImportNodeExecute(Sender: TObject);
+procedure TFormMain.ActionImportNodeExecute(Sender: TObject);
 var
   n : TTreeNode;
   nodename : string;
@@ -254,7 +266,7 @@ begin
   end;
 end;
 
-procedure TForm1.ActionPrevExecute(Sender: TObject);
+procedure TFormMain.ActionPrevExecute(Sender: TObject);
 var
   n, p, q : TTreeNode;
 begin
@@ -283,12 +295,13 @@ begin
     end;
     if n<>nil then begin
       TreeView1.Selected:=n;
-      TreeView1.TopItem:=n;
+      //TreeView1.TopItem:=n;
+      TreeView1.Invalidate;
     end;
   end;
 end;
 
-procedure TForm1.ActionTranslateExecute(Sender: TObject);
+procedure TFormMain.ActionTranslateExecute(Sender: TObject);
 var
   soutput: string;
 begin
@@ -303,18 +316,18 @@ begin
   end;
 end;
 
-procedure TForm1.FileSaveAs1Accept(Sender: TObject);
+procedure TFormMain.FileSaveAs1Accept(Sender: TObject);
 begin
   SaveJson(pchar(FileSaveAs1.Dialog.FileName),koData);
 end;
 
-procedure TForm1.FindDialog1Find(Sender: TObject);
+procedure TFormMain.FindDialog1Find(Sender: TObject);
 begin
   ActionFindStringExecute(nil);
   FindDialog1.CloseDialog;
 end;
 
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   CanClose:=False;
   if JsonModified then begin
@@ -324,17 +337,17 @@ begin
     CanClose:=True;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TFormMain.FormCreate(Sender: TObject);
 begin
 
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(koData);
 end;
 
-procedure TForm1.FormShow(Sender: TObject);
+procedure TFormMain.FormShow(Sender: TObject);
 var
   lid : string;
 begin
@@ -343,22 +356,22 @@ begin
   ComboBoxtoLang.Text:=lid;
 end;
 
-procedure TForm1.Memo1Exit(Sender: TObject);
+procedure TFormMain.Memo1Exit(Sender: TObject);
 begin
   MemoDoChanges;
 end;
 
-procedure TForm1.TreeView1DblClick(Sender: TObject);
+procedure TFormMain.TreeView1DblClick(Sender: TObject);
 begin
   MemoDoEditFocus;
 end;
 
-procedure TForm1.TreeView1Enter(Sender: TObject);
+procedure TFormMain.TreeView1Enter(Sender: TObject);
 begin
   MemoDoChanges;
 end;
 
-procedure TForm1.TreeView1KeyPress(Sender: TObject; var Key: char);
+procedure TFormMain.TreeView1KeyPress(Sender: TObject; var Key: char);
 begin
   if key=#13 then begin
     key:=#0;
@@ -366,14 +379,14 @@ begin
   end;
 end;
 
-procedure TForm1.TreeView1MouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormMain.TreeView1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   MemoDoChanges;
 end;
 
 
-procedure TForm1.TreeView1SelectionChanged(Sender: TObject);
+procedure TFormMain.TreeView1SelectionChanged(Sender: TObject);
 var
   n : TTreeNode;
   s : string;
@@ -382,7 +395,7 @@ begin
   if n<>nil then begin
     Memo1.Enabled:=True;
     case TJSONData(n.Data).JSONType of
-    jtString: s:= pchar(TJSONString(n.Data).AsString);
+    jtString: s:= pchar(UTF8Encode(TJSONString(n.Data).AsUnicodeString));
     jtNumber: s:= TJSONNumber(n.Data).AsString;
     else
       begin
@@ -391,14 +404,14 @@ begin
       end;
     end;
     Label1.Caption:=n.GetTextPath;
-    Memo1.Lines.Text:=s;
+    Memo1.Lines.Text:=pchar(s);
     Memo1.Modified:=False;
   end else
     Memo1.Enabled:=False;
   pnode:=n;
 end;
 
-procedure TForm1.AddJsonData(pa: TTreeNode; Data: TJSONData);
+procedure TFormMain.AddJsonData(pa: TTreeNode; Data: TJSONData);
 var
   N:TTreeNode;
   i : integer;
@@ -413,9 +426,8 @@ begin
                end;
               end;
     jtArray : begin
-               for i:=0 to Data.Count-1 do begin
-                 N:=TreeView1.Items.AddChildObject(pa,pchar(TJSONArray(Data).Strings[i]),TJSONArray(Data).Items[i]);
-               end;
+               for i:=0 to Data.Count-1 do
+                 N:=TreeView1.Items.AddChildObject(pa,pchar(UTF8Encode(TJSONArray(Data).UnicodeStrings[i])),TJSONArray(Data).Items[i]);
               end;
     jtNull:   begin
                N:=TreeView1.Items.AddChildObject(pa,'nil',Data);
@@ -430,7 +442,7 @@ begin
   end;
 end;
 
-procedure TForm1.MemoDoChanges;
+procedure TFormMain.MemoDoChanges;
 var
   unode:TTreeNode;
   doUpdateLabel: Boolean;
@@ -457,14 +469,14 @@ begin
   end;
 end;
 
-procedure TForm1.MemoDoEditFocus;
+procedure TFormMain.MemoDoEditFocus;
 begin
   TreeView1SelectionChanged(nil);
   if Memo1.Enabled then
     Memo1.SetFocus;
 end;
 
-procedure TForm1.SaveJson(FileName: string; Data: TJSONData);
+procedure TFormMain.SaveJson(FileName: string; Data: TJSONData);
 var
   sout:string;
   fs : TFileStream;
@@ -484,7 +496,7 @@ begin
   end;
 end;
 
-procedure TForm1.ImportJsonData(const Path: string; Data: TJSONData);
+procedure TFormMain.ImportJsonData(const Path: string; Data: TJSONData);
 var
   i : integer;
   s : string;
@@ -512,17 +524,23 @@ begin
   end;
 end;
 
-procedure TForm1.ImportJson(const FileName: string; root_path:string);
+procedure TFormMain.ImportJson(const FileName: string; root_path:string);
 var
   fj : TFileStream;
   ps : TJSONParser;
   start_data:TJSONData;
+  dummy : array[0..3] of byte;
 begin
   FreeAndNil(koImport);
   patchCount:=0;
   try
     fj := TFileStream.Create(pchar(FileName),fmOpenRead);
     try
+      if fj.Read(dummy,3)=3 then begin
+        if not CompareMem(@dummy[0],@utf8_bom[0],3) then
+          fj.Position:=0;
+      end else
+        fj.Position:=0;
       ps := TJSONParser.Create(fj);
       try
         koImport:=ps.Parse;
