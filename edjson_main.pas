@@ -122,7 +122,7 @@ begin
   pnode:=nil;
   TreeView1.Items.Clear;
   try
-    fj := TFileStream.Create(pchar(FileOpen1.Dialog.FileName),fmOpenRead);
+    fj := TFileStream.Create(UTF8Decode(FileOpen1.Dialog.FileName),fmOpenRead);
     try
       if fj.Read(dummy[0],3)=3 then begin
         if not CompareMem(@utf8_bom[0],@dummy[0],3) then
@@ -483,7 +483,7 @@ var
 begin
   sout:=pchar(Data.FormatJSON());
   try
-    fs := TFileStream.Create(FileName,fmOpenReadWrite or fmCreate);
+    fs := TFileStream.Create(UTF8Decode(FileName),fmOpenReadWrite or fmCreate);
     try
       fs.Write(sout[1],length(sout));
       JsonModified:=False;
@@ -534,7 +534,7 @@ begin
   FreeAndNil(koImport);
   patchCount:=0;
   try
-    fj := TFileStream.Create(pchar(FileName),fmOpenRead);
+    fj := TFileStream.Create(UTF8Decode(FileName),fmOpenRead);
     try
       if fj.Read(dummy,3)=3 then begin
         if not CompareMem(@dummy[0],@utf8_bom[0],3) then
