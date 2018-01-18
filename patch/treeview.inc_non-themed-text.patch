@@ -1,15 +1,15 @@
 Index: lcl/include/treeview.inc
 ===================================================================
---- lcl/include/treeview.inc	(revision 57100)
+--- lcl/include/treeview.inc	(revision 57109)
 +++ lcl/include/treeview.inc	(working copy)
-@@ -3609,6 +3609,7 @@
-   NewDefItemHeight: Integer;
+@@ -3610,6 +3610,7 @@
  begin
    if (tvoAutoItemHeight in FOptions)
-+  and (tvoThemedDraw in FOptions)
    and HandleAllocated and Canvas.HandleAllocated then begin
++    Canvas.Font.Assign(Font); // fix FDefItemHeight variation
      NewDefItemHeight:=Canvas.TextHeight(TVAutoHeightString)+FDefItemSpace;
      if NewDefItemHeight<FDefItemSpace then NewDefItemHeight:=FDefItemSpace;
+     if (Images<>nil) and (Images.Height+FDefItemSpace>NewDefItemHeight) then
 @@ -5344,7 +5345,14 @@
      begin
        CurTextRect := NodeRect;
