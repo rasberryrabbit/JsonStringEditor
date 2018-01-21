@@ -1,6 +1,6 @@
 Index: lcl/include/treeview.inc
 ===================================================================
---- lcl/include/treeview.inc	(revision 57109)
+--- lcl/include/treeview.inc	(revision 57133)
 +++ lcl/include/treeview.inc	(working copy)
 @@ -3610,6 +3610,7 @@
  begin
@@ -10,19 +10,28 @@ Index: lcl/include/treeview.inc
      NewDefItemHeight:=Canvas.TextHeight(TVAutoHeightString)+FDefItemSpace;
      if NewDefItemHeight<FDefItemSpace then NewDefItemHeight:=FDefItemSpace;
      if (Images<>nil) and (Images.Height+FDefItemSpace>NewDefItemHeight) then
-@@ -5344,7 +5345,14 @@
-     begin
-       CurTextRect := NodeRect;
-       CurTextRect.Left := x;
--      CurTextRect.Right := x + TextWidth(Node.Text) + RealIndent div 2;
-+      // fix for non-themed text
-+      if not (tvoThemedDraw in FOptions) then
-+      begin
-+        DrawText(Canvas.Handle, PChar(Node.Text), -1, CurTextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_NOPREFIX or DT_CALCRECT);
-+        CurTextRect.Top:= NodeRect.Top;
-+        CurTextRect.Bottom:=NodeRect.Bottom;
-+      end else
-+        CurTextRect.Right := x + TextWidth(Node.Text) + RealIndent div 2;
-       DrawNodeText(NodeSelected, CurTextRect, Node.Text);
+@@ -5344,13 +5345,19 @@
      end;
  
+     // draw text
+-    if Node.Text <> '' then
++    { fix empty node text at NodeSelected }
++    CurTextRect := NodeRect;
++    CurTextRect.Left := x;
++    { fix for non-themed text }
++    if not (tvoThemedDraw in FOptions) then
+     begin
+-      CurTextRect := NodeRect;
+-      CurTextRect.Left := x;
++      DrawText(Canvas.Handle, PChar(Node.Text), -1, CurTextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_NOPREFIX or DT_CALCRECT);
++      CurTextRect.Top := NodeRect.Top;
++      CurTextRect.Bottom := NodeRect.Bottom;
++      CurTextRect.Right := CurTextRect.Right + RealIndent div 2;
++    end else
+       CurTextRect.Right := x + TextWidth(Node.Text) + RealIndent div 2;
+-      DrawNodeText(NodeSelected, CurTextRect, Node.Text);
+-    end;
++    DrawNodeText(NodeSelected, CurTextRect, Node.Text);
+ 
+     // draw separator
+     if (tvoShowSeparators in FOptions) then
