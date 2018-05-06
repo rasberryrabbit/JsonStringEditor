@@ -158,7 +158,7 @@ object FormMain: TFormMain
     end
   end
   object ActionList1: TActionList
-    Left = 200
+    Left = 192
     Top = 152
     object FileOpen1: TFileOpen
       Category = 'File'
@@ -214,6 +214,11 @@ object FormMain: TFormMain
       Caption = 'Find'
       OnExecute = ActionFindStringFirstExecute
       ShortCut = 16454
+    end
+    object FileSaveC: TAction
+      Caption = 'Save'
+      OnExecute = FileSaveCExecute
+      ShortCut = 16467
     end
   end
   object OpenDialogImport: TOpenDialog

@@ -13,6 +13,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    FileSaveC: TAction;
     ActionFindStringFirst: TAction;
     ActionFindString: TAction;
     ActionTranslate: TAction;
@@ -61,6 +62,7 @@ type
     procedure ActionTranslateExecute(Sender: TObject);
     procedure FileOpen1Accept(Sender: TObject);
     procedure FileSaveAs1Accept(Sender: TObject);
+    procedure FileSaveCExecute(Sender: TObject);
     procedure FindDialog1Find(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -77,6 +79,7 @@ type
     { private declarations }
   public
     { public declarations }
+    IsOpened : Boolean;
 
     procedure AddJsonData(pa:TTreeNode; Data: TJSONData);
     procedure MemoDoChanges;
@@ -94,7 +97,8 @@ implementation
 {$R *.lfm}
 
 uses
-  jsonparser, windows, uGoogleTranApi, LazUTF8, RegExpr;
+  jsonparser, windows, uGoogleTranApi, LazUTF8, RegExpr, LazUTF8Classes,
+  DefaultTranslator;
 
 var
   koData : TJSONData = nil;
@@ -106,6 +110,14 @@ var
 const
   utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
 
+resourcestring
+  rsImportDoneMsg = ' %d string value(s) imported ';
+  rsLostChangesA = 'Lost changes. Are you sure?';
+  rsImportDoneDlg = 'Import Done';
+  rsModifiedDlg = 'Modified';
+  rsYes = '&Yes';
+  rsNo = '&No';
+
 
 { TFormMain }
 
@@ -114,7 +126,7 @@ procedure TFormMain.FileOpen1Accept(Sender: TObject);
 const
   utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
 var
-  fj : TFileStream;
+  fj : TFileStreamUTF8;
   ps : TJSONParser;
   dummy : array[0..3] of byte;
 begin
@@ -122,7 +134,7 @@ begin
   pnode:=nil;
   TreeView1.Items.Clear;
   try
-    fj := TFileStream.Create(UTF8Decode(FileOpen1.Dialog.FileName),fmOpenRead);
+    fj := TFileStreamUTF8.Create(FileOpen1.Dialog.FileName,fmOpenRead);
     try
       if fj.Read(dummy[0],3)=3 then begin
         if not CompareMem(@utf8_bom[0],@dummy[0],3) then
@@ -139,6 +151,7 @@ begin
       fj.Free;
     end;
     AddJsonData(TreeView1.Items.GetFirstNode,koData);
+    IsOpened:=True;
     StatusBar1.Panels[0].Text:=pchar(ExtractFileName(FileOpen1.Dialog.FileName));
   except
     on e:exception do ShowMessage(e.Message);
@@ -318,7 +331,16 @@ end;
 
 procedure TFormMain.FileSaveAs1Accept(Sender: TObject);
 begin
+  FileSaveAs1.Dialog.FileName:=FileOpen1.Dialog.FileName;
   SaveJson(pchar(FileSaveAs1.Dialog.FileName),koData);
+end;
+
+procedure TFormMain.FileSaveCExecute(Sender: TObject);
+begin
+  if IsOpened then
+    FileSaveAs1Accept(nil)
+    else
+      FileSaveAs1.Execute;
 end;
 
 procedure TFormMain.FindDialog1Find(Sender: TObject);
@@ -331,7 +353,8 @@ procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   CanClose:=False;
   if JsonModified then begin
-    if mrYes=QuestionDlg('Modified','Lost changes. Are you sure?',mtConfirmation,[mrYes,'&Yes',mrNo,'&No','IsDefault'],'') then
+    if mrYes=QuestionDlg(rsModifiedDlg, rsLostChangesA, mtConfirmation, [mrYes,
+      rsYes, mrNo, rsNo, 'IsDefault'], '') then
       CanClose:=True;
   end else
     CanClose:=True;
@@ -339,7 +362,7 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-
+  IsOpened:=False;
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -354,6 +377,10 @@ begin
   GoogleTranAPI_GetLangs(ComboBoxtoLang.Items);
   LazGetShortLanguageID(lid);
   ComboBoxtoLang.Text:=lid;
+  if ParamCount>1 then begin
+    FileOpen1.Dialog.FileName:=ParamStrUTF8(1);
+    FileOpen1Accept(nil);
+  end;
 end;
 
 procedure TFormMain.Memo1Exit(Sender: TObject);
@@ -479,11 +506,11 @@ end;
 procedure TFormMain.SaveJson(FileName: string; Data: TJSONData);
 var
   sout:string;
-  fs : TFileStream;
+  fs : TFileStreamUTF8;
 begin
   sout:=pchar(Data.FormatJSON());
   try
-    fs := TFileStream.Create(UTF8Decode(FileName),fmOpenReadWrite or fmCreate);
+    fs := TFileStreamUTF8.Create(FileName,fmOpenReadWrite or fmCreate);
     try
       fs.Write(sout[1],length(sout));
       JsonModified:=False;
@@ -526,7 +553,7 @@ end;
 
 procedure TFormMain.ImportJson(const FileName: string; root_path:string);
 var
-  fj : TFileStream;
+  fj : TFileStreamUTF8;
   ps : TJSONParser;
   start_data:TJSONData;
   dummy : array[0..3] of byte;
@@ -534,7 +561,7 @@ begin
   FreeAndNil(koImport);
   patchCount:=0;
   try
-    fj := TFileStream.Create(UTF8Decode(FileName),fmOpenRead);
+    fj := TFileStreamUTF8.Create(FileName,fmOpenRead);
     try
       if fj.Read(dummy,3)=3 then begin
         if not CompareMem(@dummy[0],@utf8_bom[0],3) then
@@ -558,7 +585,8 @@ begin
       ImportJsonData(root_path,start_data);
     if TreeView1.Selected<>nil then
       TreeView1SelectionChanged(nil);
-    MessageDlg('Import Done',Format(' %d string value(s) imported ',[patchCount]),mtInformation,[mbOK],'');
+    MessageDlg(rsImportDoneDlg, Format(rsImportDoneMsg, [patchCount]),
+      mtInformation, [mbOK], '');
   except
     on e:exception do ShowMessage(e.Message);
   end;
