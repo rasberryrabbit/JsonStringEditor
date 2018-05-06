@@ -1,0 +1,107 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: edjson_main.rsimportdonedlg
+msgid "Import Done"
+msgstr "가져오기 완료"
+
+#: edjson_main.rsimportdonemsg
+msgid " %d string value(s) imported "
+msgstr " %d 개의 문자열 값을 가져옴"
+
+#: edjson_main.rslostchangesa
+msgid "Lost changes. Are you sure?"
+msgstr "내용을 잃어버립니다. 정말 그렇게 하시겠습니까?"
+
+#: edjson_main.rsmodifieddlg
+msgid "Modified"
+msgstr "수정됨"
+
+#: edjson_main.rsno
+msgid "&No"
+msgstr "아니오(&N)"
+
+#: edjson_main.rsyes
+msgid "&Yes"
+msgstr "예(&Y)"
+
+#: tformmain.actionfindstring.caption
+msgid "Find Next"
+msgstr "다음 찾기"
+
+#: tformmain.actionfindstringfirst.caption
+msgid "Find"
+msgstr "찾기"
+
+#: tformmain.actionimport.caption
+msgid "&Import JSON"
+msgstr "JSON 가져오기(&I)"
+
+#: tformmain.actionimportnode.caption
+msgid "Import Node"
+msgstr "가져오기 노드"
+
+#: tformmain.actionnext.caption
+msgid "&Next"
+msgstr "다음(&N)"
+
+#: tformmain.actionprev.caption
+msgid "&Prev"
+msgstr "이전(&P)"
+
+#: tformmain.actiontranslate.caption
+msgid "Translate"
+msgstr "번역"
+
+#: tformmain.caption
+msgid "JSON String Editor 0.4"
+msgstr "JSON 문자열 편집기 0.4"
+
+#: tformmain.comboboxtolang.text
+msgid "ko"
+msgstr ""
+
+#: tformmain.fileexit1.caption
+msgid "E&xit"
+msgstr "나가기(&x)"
+
+#: tformmain.fileexit1.hint
+msgid "Exit"
+msgstr "나가기"
+
+#: tformmain.fileopen1.caption
+msgid "&Open ..."
+msgstr "열기(&O)..."
+
+#: tformmain.fileopen1.hint
+msgid "Open"
+msgstr "열기"
+
+#: tformmain.filesaveas1.caption
+msgid "Save &As ..."
+msgstr "새로 저장(&A)..."
+
+#: tformmain.filesaveas1.hint
+msgid "Save As"
+msgstr "새로 저장"
+
+#: tformmain.filesavec.caption
+msgid "Save"
+msgstr "저장"
+
+#: tformmain.label1.caption
+msgid ".."
+msgstr ""
+
+#: tformmain.menuitem1.caption
+msgid "&File"
+msgstr "파일(&F)"
+
+#: tformmain.menuitem9.caption
+msgid "&Edit"
+msgstr "편집(&E)"
+
+#: tformmain.statusbar1.panels[0].text
+msgid "..."
+msgstr ""
+

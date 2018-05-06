@@ -1,0 +1,107 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: edjson_main.rsimportdonedlg
+msgid "Import Done"
+msgstr ""
+
+#: edjson_main.rsimportdonemsg
+msgid " %d string value(s) imported "
+msgstr ""
+
+#: edjson_main.rslostchangesa
+msgid "Lost changes. Are you sure?"
+msgstr ""
+
+#: edjson_main.rsmodifieddlg
+msgid "Modified"
+msgstr ""
+
+#: edjson_main.rsno
+msgid "&No"
+msgstr ""
+
+#: edjson_main.rsyes
+msgid "&Yes"
+msgstr ""
+
+#: tformmain.actionfindstring.caption
+msgid "Find Next"
+msgstr ""
+
+#: tformmain.actionfindstringfirst.caption
+msgid "Find"
+msgstr ""
+
+#: tformmain.actionimport.caption
+msgid "&Import JSON"
+msgstr ""
+
+#: tformmain.actionimportnode.caption
+msgid "Import Node"
+msgstr ""
+
+#: tformmain.actionnext.caption
+msgid "&Next"
+msgstr ""
+
+#: tformmain.actionprev.caption
+msgid "&Prev"
+msgstr ""
+
+#: tformmain.actiontranslate.caption
+msgid "Translate"
+msgstr ""
+
+#: tformmain.caption
+msgid "JSON String Editor 0.4"
+msgstr ""
+
+#: tformmain.comboboxtolang.text
+msgid "ko"
+msgstr ""
+
+#: tformmain.fileexit1.caption
+msgid "E&xit"
+msgstr ""
+
+#: tformmain.fileexit1.hint
+msgid "Exit"
+msgstr ""
+
+#: tformmain.fileopen1.caption
+msgid "&Open ..."
+msgstr ""
+
+#: tformmain.fileopen1.hint
+msgid "Open"
+msgstr ""
+
+#: tformmain.filesaveas1.caption
+msgid "Save &As ..."
+msgstr ""
+
+#: tformmain.filesaveas1.hint
+msgid "Save As"
+msgstr ""
+
+#: tformmain.filesavec.caption
+msgid "Save"
+msgstr ""
+
+#: tformmain.label1.caption
+msgid ".."
+msgstr ""
+
+#: tformmain.menuitem1.caption
+msgid "&File"
+msgstr ""
+
+#: tformmain.menuitem9.caption
+msgid "&Edit"
+msgstr ""
+
+#: tformmain.statusbar1.panels[0].text
+msgid "..."
+msgstr ""
+
