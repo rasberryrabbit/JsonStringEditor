@@ -124,6 +124,9 @@ object FormMain: TFormMain
       object MenuItem2: TMenuItem
         Caption = '-'
       end
+      object MenuItem16: TMenuItem
+        Action = FileSaveC
+      end
       object MenuItem4: TMenuItem
         Action = FileSaveAs1
       end
