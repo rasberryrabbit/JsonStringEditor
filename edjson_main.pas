@@ -123,31 +123,35 @@ resourcestring
 { TFormMain }
 
 
+function FixJson(const s:string):string;
+begin
+  // fix item separator comma
+  Result:=ReplaceRegExpr(',(\s+?})',s,'$1',True);
+  Result:=ReplaceRegExpr('"(\s+)"',Result,'",$1"',True);
+end;
+
 procedure TFormMain.FileOpen1Accept(Sender: TObject);
 const
   utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
 var
-  fj : TFileStreamUTF8;
-  ps : TJSONParser;
+  fj : TStringStream;
   dummy : array[0..3] of byte;
+  s : string;
 begin
   FreeAndNil(koData);
   pnode:=nil;
   TreeView1.Items.Clear;
   try
-    fj := TFileStreamUTF8.Create(FileOpen1.Dialog.FileName,fmOpenRead);
+    fj := TStringStream.Create();
     try
+      fj.LoadFromFile(FileOpen1.Dialog.FileName);
       if fj.Read(dummy[0],3)=3 then begin
         if not CompareMem(@utf8_bom[0],@dummy[0],3) then
           fj.Position:=0;
       end else
-        fj.Position:=0;
-      ps := TJSONParser.Create(fj);
-      try
-        koData:=ps.Parse;
-      finally
-        ps.Free;
-      end;
+      fj.Position:=0;
+      s:=FixJson(fj.ReadString(fj.Size));
+      koData:=GetJSON(s);
     finally
       fj.Free;
     end;

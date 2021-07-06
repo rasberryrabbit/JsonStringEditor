@@ -3,7 +3,7 @@ object FormMain: TFormMain
   Height = 453
   Top = 171
   Width = 611
-  Caption = 'JSON String Editor 0.4'
+  Caption = 'JSON String Editor'
   ClientHeight = 433
   ClientWidth = 611
   Menu = MainMenu1
@@ -12,7 +12,7 @@ object FormMain: TFormMain
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDefaultPosOnly
-  LCLVersion = '1.9.0.0'
+  LCLVersion = '2.3.0.0'
   object TreeView1: TTreeView
     Left = 0
     Height = 232
@@ -107,7 +107,6 @@ object FormMain: TFormMain
       AutoSize = False
       Caption = '..'
       Font.Height = 14
-      ParentColor = False
       ParentFont = False
       ShowAccelChar = False
       WordWrap = True
@@ -242,8 +241,6 @@ object FormMain: TFormMain
     end
   end
   object FindDialog1: TFindDialog
-    Width = 480
-    Height = 136
     Options = [frDown, frDisableUpDown, frDisableWholeWord]
     OnFind = FindDialog1Find
     Left = 440
