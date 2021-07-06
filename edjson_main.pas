@@ -157,7 +157,7 @@ begin
     end;
     AddJsonData(TreeView1.Items.GetFirstNode,koData);
     IsOpened:=True;
-    StatusBar1.Panels[0].Text:=pchar(ExtractFileName(FileOpen1.Dialog.FileName));
+    StatusBar1.Panels[0].Text:=pchar({ExtractFileName}(FileOpen1.Dialog.FileName));
   except
     on e:exception do ShowMessage(e.Message);
   end;
@@ -336,8 +336,10 @@ end;
 
 procedure TFormMain.FileSaveAs1Accept(Sender: TObject);
 begin
-  FileSaveAs1.Dialog.FileName:=FileOpen1.Dialog.FileName;
+  if Sender=nil then
+    FileSaveAs1.Dialog.FileName:=FileOpen1.Dialog.FileName;
   SaveJson(pchar(FileSaveAs1.Dialog.FileName),koData);
+  FileOpen1.Dialog.FileName:=FileSaveAs1.Dialog.FileName;
 end;
 
 procedure TFormMain.FileSaveCExecute(Sender: TObject);
@@ -519,7 +521,7 @@ begin
     try
       fs.Write(sout[1],length(sout));
       JsonModified:=False;
-      StatusBar1.Panels[0].Text:=pchar(ExtractFileName(FileName));
+      StatusBar1.Panels[0].Text:=pchar({ExtractFileName}(FileName));
     finally
       fs.Free;
     end;
