@@ -141,6 +141,7 @@ begin
   FreeAndNil(koData);
   pnode:=nil;
   TreeView1.Items.Clear;
+  TreeView1.Items.BeginUpdate;
   try
     fj := TStringStream.Create();
     try
@@ -155,6 +156,7 @@ begin
     finally
       fj.Free;
     end;
+
     AddJsonData(TreeView1.Items.GetFirstNode,koData);
     IsOpened:=True;
     StatusBar1.Panels[0].Text:=pchar({ExtractFileName}(FileOpen1.Dialog.FileName));
@@ -162,6 +164,7 @@ begin
   except
     on e:exception do ShowMessage(e.Message);
   end;
+  TreeView1.Items.EndUpdate;
   JsonModified:=False;
 end;
 
