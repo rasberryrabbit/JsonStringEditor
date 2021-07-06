@@ -158,6 +158,7 @@ begin
     AddJsonData(TreeView1.Items.GetFirstNode,koData);
     IsOpened:=True;
     StatusBar1.Panels[0].Text:=pchar({ExtractFileName}(FileOpen1.Dialog.FileName));
+    FileSaveAs1.Dialog.FileName:=FileOpen1.Dialog.FileName;
   except
     on e:exception do ShowMessage(e.Message);
   end;
@@ -344,9 +345,9 @@ end;
 
 procedure TFormMain.FileSaveCExecute(Sender: TObject);
 begin
-  if IsOpened then
+  {if IsOpened then
     FileSaveAs1Accept(nil)
-    else
+    else}
       FileSaveAs1.Execute;
 end;
 
