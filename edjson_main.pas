@@ -99,7 +99,7 @@ implementation
 
 uses
   jsonparser, windows, uGoogleTranApi, LazUTF8, RegExpr, LazUTF8Classes,
-  DefaultTranslator;
+  DefaultTranslator, PasJSON;
 
 var
   koData : TJSONData = nil;
@@ -107,6 +107,7 @@ var
   JsonModified : Boolean = False;
   koImport : TJSONData = nil;
   patchCount:Integer = 0;
+  dups : Integer = 0;
 
 const
   utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
@@ -130,6 +131,25 @@ begin
   Result:=ReplaceRegExpr('"(\s+)"',Result,'",$1"',True);
 end;
 
+
+procedure RemoveDups(tx:TPasJSONItemObject);
+var
+  i, j: Integer;
+begin
+  for i:=0 to tx.Count-1 do begin
+    if i+1<tx.Count then
+    for j:=i+1 to tx.Count-1 do begin
+      if tx.Keys[i]=tx.Keys[j] then begin
+        tx.Delete(i);
+        Inc(dups);
+        break;
+      end;
+    end;
+    if tx.Values[i] is TPasJSONItemObject then
+      RemoveDups(TPasJSONItemObject(tx.Values[i]));
+  end;
+end;
+
 procedure TFormMain.FileOpen1Accept(Sender: TObject);
 const
   utf8_bom : array[0..2] of byte = ($ef, $bb, $bf);
@@ -137,22 +157,31 @@ var
   fj : TStringStream;
   dummy : array[0..3] of byte;
   s : string;
+  tx:TPasJSONItemObject;
+  ttx:TPasJSONItemObjectProperty;
 begin
   FreeAndNil(koData);
   pnode:=nil;
   TreeView1.Items.Clear;
   TreeView1.Items.BeginUpdate;
   try
-    fj := TStringStream.Create();
+    fj := TStringStream.Create;
     try
       fj.LoadFromFile(FileOpen1.Dialog.FileName);
       if fj.Read(dummy[0],3)=3 then begin
         if not CompareMem(@utf8_bom[0],@dummy[0],3) then
           fj.Position:=0;
       end else
-      fj.Position:=0;
+        fj.Position:=0;
+      dups:=0;
       s:=FixJson(fj.ReadString(fj.Size));
-      koData:=GetJSON(s);
+      tx:=TPasJSONItemObject(TPasJSON.Parse(s,[TPasJSONModeFlag.Comments],TPasJSONEncoding.UTF8));
+      RemoveDups(TPasJSONItemObject(tx));
+      fj.Clear;
+      TPasJSON.StringifyToStream(fj,tx);
+      tx.Free;
+      fj.Position:=0;
+      koData:=GetJSON(fj);
     finally
       fj.Free;
     end;
@@ -564,27 +593,34 @@ end;
 
 procedure TFormMain.ImportJson(const FileName: string; root_path:string);
 var
-  fj : TFileStreamUTF8;
-  ps : TJSONParser;
+  fj : TStringStream;
   start_data:TJSONData;
   dummy : array[0..3] of byte;
+  s: string;
+  tx: TPasJSONItemObject;
 begin
   FreeAndNil(koImport);
   patchCount:=0;
   try
-    fj := TFileStreamUTF8.Create(FileName,fmOpenRead);
+    fj := TStringStream.Create;
     try
+      fj.LoadFromFile(FileName);
       if fj.Read(dummy,3)=3 then begin
         if not CompareMem(@dummy[0],@utf8_bom[0],3) then
           fj.Position:=0;
       end else
         fj.Position:=0;
-      ps := TJSONParser.Create(fj);
-      try
-        koImport:=ps.Parse;
-      finally
-        ps.Free;
-      end;
+
+      dups:=0;
+      s:=FixJson(fj.ReadString(fj.Size));
+      tx:=TPasJSONItemObject(TPasJSON.Parse(s,[TPasJSONModeFlag.Comments],TPasJSONEncoding.UTF8));
+      RemoveDups(TPasJSONItemObject(tx));
+      fj.Clear;
+      TPasJSON.StringifyToStream(fj,tx);
+      tx.Free;
+      fj.Position:=0;
+
+      koImport:=GetJSON(fj);
     finally
       fj.Free;
     end;
