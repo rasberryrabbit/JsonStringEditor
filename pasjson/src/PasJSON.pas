@@ -1240,15 +1240,9 @@ begin
      $0000..$d7ff,$f000..$fffc:begin
       result:=result+'\u'+HexChars[false,(c shr 12) and $f]+HexChars[false,(c shr 8) and $f]+HexChars[false,(c shr 4) and $f]+HexChars[false,c and $f];
      end;
-     $010000..$01ffff:begin
-      dec(c,$010000);
-      t:=(c shr 10) or $d800;
-      result:=result+'\u'+HexChars[false,(t shr 12) and $f]+HexChars[false,(t shr 8) and $f]+HexChars[false,(t shr 4) and $f]+HexChars[false,t and $f];
-      t:=(c and $3ff) or $dc00;
-      result:=result+'\u'+HexChars[false,(t shr 12) and $f]+HexChars[false,(t shr 8) and $f]+HexChars[false,(t shr 4) and $f]+HexChars[false,t and $f];
-     end;
+     $010000..$01ffff,
      $100000..$10ffff:begin
-      dec(c,$100000);
+      c:=c and $ffff;
       t:=(c shr 10) or $d800;
       result:=result+'\u'+HexChars[false,(t shr 12) and $f]+HexChars[false,(t shr 8) and $f]+HexChars[false,(t shr 4) and $f]+HexChars[false,t and $f];
       t:=(c and $3ff) or $dc00;
