@@ -20,6 +20,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="5"/>
+      <RevisionNr Value="1"/>
       <BuildNr Value="7"/>
     </VersionInfo>
     <BuildModes Count="1">
