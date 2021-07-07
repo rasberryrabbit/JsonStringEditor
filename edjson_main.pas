@@ -128,7 +128,7 @@ function FixJson(const s:string):string;
 begin
   // fix item separator comma
   Result:=ReplaceRegExpr(',(\s+?})',s,'$1',True);
-  Result:=ReplaceRegExpr('"(\s+)"',Result,'",$1"',True);
+  Result:=ReplaceRegExpr('([^\\])"(\s+)"',Result,'$1",$2"',True);
 end;
 
 
