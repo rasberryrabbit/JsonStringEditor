@@ -145,7 +145,7 @@ begin
         break;
       end;
     end;
-    if tx.Values[i] is TPasJSONItemObject then
+    if (i<tx.Count) and (tx.Values[i] is TPasJSONItemObject) then
       RemoveDups(TPasJSONItemObject(tx.Values[i]));
   end;
 end;
